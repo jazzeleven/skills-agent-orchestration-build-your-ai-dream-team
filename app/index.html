@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Pulse</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Project Pulse</h1>
+        <p>Monitor and manage your projects in real-time</p>
+    </header>
+
+    <main>
+        <section class="dashboard" role="region" aria-label="Projects dashboard">
+            <div id="error-container" class="error-message" role="alert" aria-live="polite" style="display: none;"></div>
+            <div id="loading" class="loading" role="status" aria-label="Loading projects">
+                <p>Loading projects...</p>
+            </div>
+            <div id="projects-container" class="projects-container">
+                <!-- Project cards will be inserted here -->
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Project Pulse. All rights reserved.</p>
+    </footer>
+
+    <script>
+        /**
+         * Loads project data from JSON file and renders project cards
+         */
+        async function loadAndRenderProjects() {
+            const projectsContainer = document.getElementById('projects-container');
+            const errorContainer = document.getElementById('error-container');
+            const loadingElement = document.getElementById('loading');
+
+            try {
+                // Fetch project data
+                const response = await fetch('project-data.json');
+                
+                if (!response.ok) {
+                    throw new Error(`Failed to load project data: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+
+                // Validate data structure
+                if (!data.projects || !Array.isArray(data.projects)) {
+                    throw new Error('Invalid project data structure');
+                }
+
+                // Hide loading indicator
+                loadingElement.style.display = 'none';
+
+                // Clear any previous error messages
+                errorContainer.style.display = 'none';
+
+                // Render each project card
+                data.projects.forEach((project, index) => {
+                    const card = createProjectCard(project, index);
+                    projectsContainer.appendChild(card);
+                });
+
+                // If no projects, show message
+                if (data.projects.length === 0) {
+                    const emptyMessage = document.createElement('div');
+                    emptyMessage.className = 'empty-state';
+                    emptyMessage.setAttribute('role', 'status');
+                    emptyMessage.textContent = 'No projects found.';
+                    projectsContainer.appendChild(emptyMessage);
+                }
+
+            } catch (error) {
+                // Hide loading indicator
+                loadingElement.style.display = 'none';
+
+                // Display error message
+                errorContainer.style.display = 'block';
+                errorContainer.textContent = `Error: ${error.message}`;
+                console.error('Error loading projects:', error);
+            }
+        }
+
+        /**
+         * Creates a project card element
+         * @param {Object} project - Project data object
+         * @param {number} index - Index of the project
+         * @returns {HTMLElement} Project card element
+         */
+        function createProjectCard(project, index) {
+            const card = document.createElement('article');
+            card.className = 'project-card';
+            card.setAttribute('role', 'article');
+            card.setAttribute('aria-label', `${project.name} project card`);
+            card.setAttribute('tabindex', '0');
+
+            // Status badge with appropriate ARIA label
+            const statusClass = `status-${project.status.toLowerCase()}`;
+            const statusBadge = document.createElement('span');
+            statusBadge.className = `status-badge ${statusClass}`;
+            statusBadge.setAttribute('aria-label', `Status: ${project.status}`);
+            statusBadge.textContent = project.status;
+
+            // Priority badge with appropriate styling
+            const priorityClass = `priority-${project.priority.toLowerCase()}`;
+            const priorityBadge = document.createElement('span');
+            priorityBadge.className = `priority-badge ${priorityClass}`;
+            priorityBadge.setAttribute('aria-label', `Priority: ${project.priority}`);
+            priorityBadge.textContent = project.priority;
+
+            // Build card header
+            const cardHeader = document.createElement('div');
+            cardHeader.className = 'card-header';
+            const title = document.createElement('h2');
+            title.textContent = project.name;
+            cardHeader.appendChild(title);
+
+            // Build card body
+            const cardBody = document.createElement('div');
+            cardBody.className = 'card-body';
+
+            // Owner info
+            const ownerSection = document.createElement('div');
+            ownerSection.className = 'project-info';
+            const ownerLabel = document.createElement('strong');
+            ownerLabel.textContent = 'Owner:';
+            const ownerValue = document.createElement('span');
+            ownerValue.textContent = project.owner;
+            ownerSection.appendChild(ownerLabel);
+            ownerSection.appendChild(document.createTextNode(' '));
+            ownerSection.appendChild(ownerValue);
+
+            // Status info
+            const statusSection = document.createElement('div');
+            statusSection.className = 'project-info';
+            const statusLabel = document.createElement('strong');
+            statusLabel.textContent = 'Status:';
+            statusSection.appendChild(statusLabel);
+            statusSection.appendChild(document.createTextNode(' '));
+            statusSection.appendChild(statusBadge);
+
+            // Recent activity info
+            const activitySection = document.createElement('div');
+            activitySection.className = 'project-info';
+            const activityLabel = document.createElement('strong');
+            activityLabel.textContent = 'Recent Activity:';
+            const activityValue = document.createElement('span');
+            activityValue.textContent = project.recentActivity;
+            activitySection.appendChild(activityLabel);
+            activitySection.appendChild(document.createTextNode(' '));
+            activitySection.appendChild(activityValue);
+
+            // Priority info
+            const prioritySection = document.createElement('div');
+            prioritySection.className = 'project-info';
+            const priorityLabel = document.createElement('strong');
+            priorityLabel.textContent = 'Priority:';
+            prioritySection.appendChild(priorityLabel);
+            prioritySection.appendChild(document.createTextNode(' '));
+            prioritySection.appendChild(priorityBadge);
+
+            // Add all sections to card body
+            cardBody.appendChild(ownerSection);
+            cardBody.appendChild(statusSection);
+            cardBody.appendChild(activitySection);
+            cardBody.appendChild(prioritySection);
+
+            // Assemble card
+            card.appendChild(cardHeader);
+            card.appendChild(cardBody);
+
+            return card;
+        }
+
+        // Load and render projects when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', loadAndRenderProjects);
+        } else {
+            loadAndRenderProjects();
+        }
+    </script>
+</body>
+</html>

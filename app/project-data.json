@@ -1,0 +1,39 @@
+{
+  "projects": [
+    {
+      "name": "Dashboard Redesign",
+      "owner": "Sarah Chen",
+      "status": "Active",
+      "recentActivity": "Updated 2 hours ago",
+      "priority": "High"
+    },
+    {
+      "name": "API Authentication Upgrade",
+      "owner": "Marcus Rodriguez",
+      "status": "Active",
+      "recentActivity": "Updated 30 minutes ago",
+      "priority": "High"
+    },
+    {
+      "name": "Database Migration v2",
+      "owner": "Jennifer Kim",
+      "status": "Pending",
+      "recentActivity": "Updated 1 day ago",
+      "priority": "Medium"
+    },
+    {
+      "name": "Mobile App QA Testing",
+      "owner": "Alex Thompson",
+      "status": "Active",
+      "recentActivity": "Updated 3 hours ago",
+      "priority": "Medium"
+    },
+    {
+      "name": "Legacy System Decommission",
+      "owner": "David Patel",
+      "status": "Completed",
+      "recentActivity": "Completed 5 days ago",
+      "priority": "Low"
+    }
+  ]
+}
